@@ -3,5 +3,5 @@ Este proyecto es un POC que utiliza un script que sube datos a form.io y automat
 ### Integrantes:  
 Alfredo Hernández  
 Valentina Manríquez  
-Renato Valdés
+Renato Valdés  
 Jorge Romero
