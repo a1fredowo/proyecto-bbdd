@@ -9,7 +9,54 @@
 <body>
     <div class="container">
         <h1 class="mt-5">Lista de Productos</h1>
-        <table class="table table-bordered mt-3">
+        
+        <!-- Filtros -->
+        <form id="filterForm" class="form-inline mb-4">
+            <div class="form-group mr-3">
+                <label for="categoria" class="mr-2">Categoría:</label>
+                <select class="form-control" id="categoria" name="categoria">
+                    <option value="">Todas</option>
+                    <option value="Motos">Motos</option>
+                    <option value="Repuestos">Repuestos</option>
+                    <option value="Accesorios">Accesorios</option>
+                </select>
+            </div>
+            <div class="form-group mr-3">
+                <label for="marca" class="mr-2">Marca:</label>
+                <select class="form-control" id="marca" name="marca">
+                    <option value="">Todas</option>
+                    <option value="Honda">Honda</option>
+                    <option value="Bajaj">Bajaj</option>
+                    <option value="Suzuki">Suzuki</option>
+                    <option value="Yamaha">Yamaha</option>
+                    <option value="Kawasaki">Kawasaki</option>
+                    <option value="BMW">BMW</option>
+                    <option value="Ducati">Ducati</option>
+                    <option value="Harley-Davidson">Harley-Davidson</option>
+                    <option value="Triumph">Triumph</option>
+                    <option value="KTM">KTM</option>
+                </select>
+            </div>
+            <div class="form-group mr-3">
+                <label for="ordenar" class="mr-2">Ordenar por:</label>
+                <select class="form-control" id="ordenar" name="ordenar">
+                    <option value="idProducto">ID</option>
+                    <option value="precio">Precio</option>
+                    <option value="stock">Stock</option>
+                </select>
+            </div>
+            <div class="form-group mr-3">
+                <label for="orden" class="mr-2">Orden:</label>
+                <select class="form-control" id="orden" name="orden">
+                    <option value="asc">Ascendente</option>
+                    <option value="desc">Descendente</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Filtrar</button>
+        </form>
+
+        <!-- Tabla de Productos -->
+        <table class="table table-bordered">
             <thead class="thead-dark">
                 <tr>
                     <th>ID Producto</th>
@@ -38,5 +85,23 @@
             </tbody>
         </table>
     </div>
+
+    <script>
+        document.getElementById('filterForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const categoria = document.getElementById('categoria').value;
+            const marca = document.getElementById('marca').value;
+            const ordenar = document.getElementById('ordenar').value;
+            const orden = document.getElementById('orden').value;
+            let url = '/view_products';
+            const params = [];
+            if (categoria) params.push(`categoria=${categoria}`);
+            if (marca) params.push(`marca=${marca}`);
+            if (ordenar) params.push(`ordenar=${ordenar}`);
+            if (orden) params.push(`orden=${orden}`);
+            if (params.length > 0) url += '?' + params.join('&');
+            window.location.href = url;
+        });
+    </script>
 </body>
 </html>

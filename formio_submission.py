@@ -63,7 +63,7 @@ form_io_submissions_url = 'https://csdpmqimmmrbnbp.form.io/producto/submission'
 siguiente_id = obtener_siguiente_id(form_io_submissions_url)
 
 # Número de datos ficticios a generar
-num_datos = 500
+num_datos = 250
 
 # Obtener los datos ficticios
 datos_ficticios = generar_datos_ficticios(num_datos, siguiente_id)

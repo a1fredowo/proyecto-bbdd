@@ -23,16 +23,21 @@ def get_products():
     # Obtener parámetros de filtrado de la consulta
     categoria = request.args.get('categoria')
     marca = request.args.get('marca')
+    ordenar = request.args.get('ordenar', 'idProducto')
+    orden = request.args.get('orden', 'asc')
     query = {}
     if categoria:
         query['categoria'] = categoria
     if marca:
         query['marca'] = marca
-    
-    productos = list(db.producto.find(query))
+
+    # Determinar el orden de ordenación
+    sort_order = 1 if orden == 'asc' else -1
+
+    productos = list(db.producto.find(query).sort(ordenar, sort_order))
     for producto in productos:
         producto['_id'] = str(producto['_id'])  # Convertir ObjectId a string
-    
+
     return jsonify(productos), 200
 
 @app.route('/delete_all_products', methods=['DELETE'])
@@ -42,21 +47,43 @@ def delete_all_products():
 
 @app.route('/fetch_and_store', methods=['GET'])
 def fetch_and_store():
-    # Obtener submissions de form.io
-    response = requests.get(form_io_submissions_url)
+    # Obtener submissions de form.io con limitación y paginación
+    limit = 500  # Número de submissions a obtener
+    skip = 0  # Se puede incrementar para paginación
+    params = {'limit': limit, 'skip': skip}
+    response = requests.get(form_io_submissions_url, params=params)
     submissions = response.json()
 
-    # Insertar submissions en MongoDB
+    # Insertar submissions en MongoDB evitando duplicados
+    nuevos_productos = 0
     for submission in submissions:
-        db.producto.insert_one(submission['data'])
+        producto = submission['data']
+        if not db.producto.find_one({'idProducto': producto['idProducto']}):
+            db.producto.insert_one(producto)
+            nuevos_productos += 1
 
-    return jsonify({'msg': f"{len(submissions)} submissions insertadas en MongoDB."}), 201
+    return jsonify({'msg': f'{nuevos_productos} nuevos productos insertados en MongoDB.'}), 201
 
 @app.route('/view_products', methods=['GET'])
 def view_products():
-    productos = list(db.producto.find())
+    # Obtener parámetros de filtrado de la consulta
+    categoria = request.args.get('categoria')
+    marca = request.args.get('marca')
+    ordenar = request.args.get('ordenar', 'idProducto')
+    orden = request.args.get('orden', 'asc')
+    query = {}
+    if categoria:
+        query['categoria'] = categoria
+    if marca:
+        query['marca'] = marca
+
+    # Determinar el orden de ordenación
+    sort_order = 1 if orden == 'asc' else -1
+
+    productos = list(db.producto.find(query).sort(ordenar, sort_order))
     for producto in productos:
         producto['_id'] = str(producto['_id'])  # Convertir ObjectId a string
+
     return render_template('index.html', productos=productos)
 
 if __name__ == '__main__':
